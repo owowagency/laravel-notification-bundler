@@ -23,6 +23,7 @@
 2. [Installation](#-installation)
 3. [Usage](#-usage)
     1. [Changing the delay](#changing-the-delay)
+    2. [Specify the channels to bundle](#specify-the-channels-to-bundle)
 4. [Contributing](#-contributing)
 5. [License](#-license)
 6. [OWOW](#-owow)
@@ -136,6 +137,17 @@ public function withDelay(object $notifiable): array
         'mail' => 30,
         'sms' => 60,
     ];
+}
+```
+
+### Specify the channels to bundle
+
+By default, all channels are bundled. You can change this by using the `bundleChannels()` method.
+
+```php
+public function bundleChannels(): array
+{
+    return ['mail'];
 }
 ```
 

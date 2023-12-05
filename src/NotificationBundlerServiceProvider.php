@@ -22,6 +22,13 @@ class NotificationBundlerServiceProvider extends ServiceProvider
             $notifiable = $event->job->notifiables->first();
             /** @var ShouldBundleNotifications $notification */
             $notification = $event->job->notification;
+            $channel = $event->job->channels[0];
+
+            if (method_exists($notification, 'bundleChannels')) {
+                if (! in_array($channel, $notification->bundleChannels())) {
+                    return;
+                }
+            }
 
             NotificationBundle::create([
                 'uuid' => $event->job->notification->id,

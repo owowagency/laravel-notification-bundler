@@ -7,6 +7,7 @@ use Owowagency\NotificationBundler\Tests\Support\BundledMultiChannelNotification
 use Owowagency\NotificationBundler\Tests\Support\FailingBundledMailNotification;
 use Owowagency\NotificationBundler\Tests\Support\NotifiableModel;
 use Owowagency\NotificationBundler\Tests\Support\SingleDelayBundledMailNotification;
+use Owowagency\NotificationBundler\Tests\Support\UnBundledMailNotification;
 
 describe('single user bundled mail notification', function () {
     beforeEach(function () {
@@ -146,5 +147,39 @@ describe('single user bundled mail notification', function () {
 
         expect(Queue::size())->toBe(0);
         expect($this->mailTransport->messages()->count())->toBe(1);
+    });
+
+    it('can define on which channel a notification should be bundled', function () {
+        $this->notifiable->notify(new UnBundledMailNotification('Robin'));
+
+        $this->travelTo('2023-06-07 12:00:10');
+
+        $this->notifiable->notify(new UnBundledMailNotification('Pieter'));
+
+        expect(NotificationBundle::count())->toBe(0);
+
+        $this->travelTo('2023-06-07 12:00:30');
+
+        $this->artisan('queue:work --once');
+
+        expect(NotificationBundle::count())->toBe(0);
+        expect($this->mailTransport->messages()->count())->toBe(1);
+
+        $this->travelTo('2023-06-07 12:00:40');
+
+        $this->artisan('queue:work --once');
+
+        expect(NotificationBundle::count())->toBe(0);
+        expect($this->mailTransport->messages()->count())->toBe(2);
+
+        $this->mailTransport->messages()->each(function ($message) {
+            /* @var \Symfony\Component\Mime\Email $email */
+            $email = $message->getOriginalMessage();
+
+            expect($email->getTo())->toHaveCount(1);
+            expect($email->getTo()[0]->getAddress())->toBe('test@owow.io');
+            expect($email->getSubject())->toBe('Bundle');
+            expect($email->getTextBody())->toMatchSnapshot();
+        });
     });
 });
