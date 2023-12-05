@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  php:
+    image: owow/laravel-php:8.2
+    container_name: notification_bundler_php
+    tty: true
+    environment:
+      - COMPOSER_MEMORY_LIMIT=-1
+    volumes:
+      - .:/var/www/html:cached

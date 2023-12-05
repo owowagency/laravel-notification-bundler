@@ -1,0 +1,36 @@
+name: Check & fix styling
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Get next release version
+        run: scripts/get-next-version.js >> "$GITHUB_ENV"
+
+      - name: Semantic Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release to Packagist
+        uses: mnavarrocarter/packagist-update@v1.0
+        with:
+          username: ${{ secrets.PACKAGIST_USERNAME }}
+          api_token: ${{ secrets.PACKAGIST_TOKEN }}
