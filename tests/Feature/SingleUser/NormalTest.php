@@ -23,14 +23,14 @@ describe('single user normal mail notification', function () {
         expect(Queue::size())->toBe(1);
         expect(NotificationBundle::count())->toBe(0);
 
-        $this->travelTo('2023-06-07 12:00:02');
+        $this->travelTo('2023-06-07 12:00:10');
 
         $this->notifiable->notify(new MailNotification('Pieter'));
 
         expect(Queue::size())->toBe(2);
         expect(NotificationBundle::count())->toBe(0);
 
-        $this->travelTo('2023-06-07 12:00:05');
+        $this->travelTo('2023-06-07 12:00:30');
 
         $this->artisan('queue:work --once');
 
@@ -38,7 +38,7 @@ describe('single user normal mail notification', function () {
         expect(NotificationBundle::count())->toBe(0);
         expect($this->mailTransport->messages()->count())->toBe(1);
 
-        $this->travelTo('2023-06-07 12:00:07');
+        $this->travelTo('2023-06-07 12:00:40');
 
         $this->artisan('queue:work --once');
 
@@ -53,7 +53,7 @@ describe('single user normal mail notification', function () {
             expect($email->getTo())->toHaveCount(1);
             expect($email->getTo()[0]->getAddress())->toBe('test@owow.io');
             expect($email->getSubject())->toBe('Normal');
-            expect($email->getTextBody())->toContain("$name was not bundled.");
+            expect($email->getTextBody())->toMatchSnapshot();
         }
     });
 });

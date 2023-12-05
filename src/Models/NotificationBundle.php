@@ -11,6 +11,7 @@ class NotificationBundle extends Model
 
     protected $fillable = [
         'uuid',
+        'channel',
         'bundle_identifier',
         'payload',
     ];

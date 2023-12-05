@@ -26,10 +26,14 @@ class BundlesNotifications
 
         /** @var ShouldBundleNotifications $notification */
         $notification = $job->notification;
+        $channel = $job->channels[0];
         $identifier = $notification->bundleIdentifier($this->notifiable);
 
-        $notificationBundle = NotificationBundle::query()
-            ->where('bundle_identifier', $identifier)
+        $notificationBundleQuery = NotificationBundle::query()
+            ->where('channel', $channel)
+            ->where('bundle_identifier', $identifier);
+
+        $notificationBundle = $notificationBundleQuery->clone()
             ->latest()
             ->get();
 
@@ -37,9 +41,7 @@ class BundlesNotifications
             $bundle = $notificationBundle->pluck('unserialized_payload');
             $notification->setBundle($bundle);
 
-            NotificationBundle::query()
-                ->whereIn('uuid', $notificationBundle->pluck('uuid'))
-                ->delete();
+            $notificationBundleQuery->delete();
 
             return $next($job);
         }

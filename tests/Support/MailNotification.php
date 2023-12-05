@@ -16,12 +16,12 @@ class MailNotification extends Notification implements ShouldQueue
         //
     }
 
-    public function via($notifiable): array
+    public function via(object $notifiable): array
     {
         return ['mail'];
     }
 
-    public function toMail($notifiable)
+    public function toMail(object $notifiable)
     {
         return (new MailMessage)
             ->subject('Normal')

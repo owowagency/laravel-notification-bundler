@@ -4,17 +4,16 @@ namespace Owowagency\NotificationBundler\Tests\Support;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Owowagency\NotificationBundler\BundlesNotifications;
 use Owowagency\NotificationBundler\ShouldBundleNotifications;
 
-class BundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
+class FailingBundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
 {
     use BundlesNotifications, Queueable;
 
-    public function __construct(public string $name)
+    public function __construct(public int $tries)
     {
         //
     }
@@ -26,18 +25,11 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
 
     public function toMailBundle(object $notifiable, Collection $notifications)
     {
-        $message = (new MailMessage)
-            ->subject('Bundle');
-
-        foreach ($notifications as $notification) {
-            $message->line("$notification->name was bundled.");
-        }
-
-        return $message;
+        throw new \Exception('Oh no! I\'m broken.');
     }
 
     public function bundleIdentifier(object $notifiable): string
     {
-        return "user_$notifiable->id";
+        return "fail_$notifiable->id";
     }
 }

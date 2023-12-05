@@ -10,11 +10,11 @@ use Illuminate\Support\Collection;
 use Owowagency\NotificationBundler\BundlesNotifications;
 use Owowagency\NotificationBundler\ShouldBundleNotifications;
 
-class BundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
+class SingleDelayBundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
 {
     use BundlesNotifications, Queueable;
 
-    public function __construct(public string $name)
+    public function __construct(public int $bundleDelay)
     {
         //
     }
@@ -30,10 +30,15 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
             ->subject('Bundle');
 
         foreach ($notifications as $notification) {
-            $message->line("$notification->name was bundled.");
+            $message->line("Delayed notification was bundled.");
         }
 
         return $message;
+    }
+
+    public function bundleDelay(object $notifiable): int|\DateTimeInterface
+    {
+        return $this->bundleDelay;
     }
 
     public function bundleIdentifier(object $notifiable): string

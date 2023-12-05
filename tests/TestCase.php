@@ -89,8 +89,14 @@ abstract class TestCase extends Orchestra
         $notificationBundlesTableMigration = require __DIR__.'/../database/migrations/create_notification_bundles_table.php';
         $notificationBundlesTableMigration->up();
 
+        $notificationsTableMigration = require __DIR__.'/../vendor/orchestra/testbench-core/laravel/migrations/notifications/0001_01_01_000000_testbench_create_notifications_table.php';
+        $notificationsTableMigration->up();
+
         $jobsTableMigration = require __DIR__.'/../vendor/orchestra/testbench-core/laravel/migrations/queue/0001_01_01_000000_testbench_create_jobs_table.php';
         $jobsTableMigration->up();
+
+        $failedJobsTableMigration = require __DIR__.'/../vendor/orchestra/testbench-core/laravel/migrations/2019_08_19_000000_testbench_create_failed_jobs_table.php';
+        $failedJobsTableMigration->up();
     }
 
     public function getTestsPath(string $suffix = ''): string

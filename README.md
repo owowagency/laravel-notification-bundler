@@ -8,7 +8,7 @@
     <a href="https://github.com/owowagency/laravel-notification-bundler/actions/workflows/test.yml?query=branch%3Amain">
         <img src="https://img.shields.io/github/actions/workflow/status/owowagency/laravel-notification-bundler/test.yml?branch=main&label=tests&logo=github" alt="Workflow shield">
     </a>
-    <a href="https://packagist.org/packages/owowagency/laravel-notification-bundler" target="_blank">
+    <a href="https://packagist.org/packages/owowagency/laravel-notification-bundler">
         <img src="https://img.shields.io/packagist/dt/owowagency/laravel-notification-bundler.svg?logo=packagist" alt="Downloads shield">
     </a>
 </p>
@@ -22,6 +22,7 @@
 1. [Demo](#-demo)
 2. [Installation](#-installation)
 3. [Usage](#-usage)
+    1. [Changing the delay](#changing-the-delay)
 4. [Contributing](#-contributing)
 5. [License](#-license)
 6. [OWOW](#-owow)
@@ -63,7 +64,7 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
     /**
      * The channels the notification should be sent on.
      */
-    public function via($notifiable): array
+    public function via(object $notifiable): array
     {
         return ['mail'];
     }
@@ -73,7 +74,7 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
      * This replaces the original `toMail` method and adds the $notifications 
      * collection as the last parameter.
      */
-    public function toMailBundle($notifiable, Collection $notifications)
+    public function toMailBundle(object $notifiable, Collection $notifications)
     {
         $message = (new MailMessage)
             ->subject('Bundle');
@@ -90,10 +91,51 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
      * This is used to determine which notifications should be bundled together.
      * This also means that different notifications can be bundled together.
      */
-    public function bundleIdentifier($notifiable): string
+    public function bundleIdentifier(object $notifiable): string
     {
         return "user_$notifiable->id";
     }
+}
+```
+
+Because of limitations in Laravel, the database channel must implicitly use the `toArray`, or `toDatabase` method.
+To get the notifications in those functions, you can use the `getBundle()` method.
+
+```php
+public function toDatabase(object $notifiable)
+{
+    $notifications = $this->getBundle();
+    return ['names' => $notifications->pluck('name')->toArray()];
+}
+```
+
+### Changing the delay
+
+By default, the delay is set to 30 seconds. 
+You can change this delay by publishing the config file and changing the `bundle_notifications_after_seconds` value.
+
+```bash
+php artisan vendor:publish --provider="Owowagency\NotificationBundler\NotificationBundlerServiceProvider" --tag="config"
+```
+
+To change it per notification, the `bundleDelay()` method can be used.
+
+```php
+public function bundleDelay(object $notifiable): int|\DateTimeInterface
+{
+    return 60;
+}
+```
+
+To take even more control, you can use the `withDelay()` method to specify a delay per channel.
+
+```php
+public function withDelay(object $notifiable): array
+{
+    return [
+        'mail' => 30,
+        'sms' => 60,
+    ];
 }
 ```
 

@@ -38,9 +38,9 @@ trait BundlesNotifications
     }
 
     /**
-     * The delay after which the notifications should be bundled and sent.
+     * {@inheritdoc}
      */
-    public function bundleDelay($notifiable): int
+    public function bundleDelay(object $notifiable): int|\DateTimeInterface
     {
         return config('notification-bundler.bundle_notifications_after_seconds');
     }
@@ -50,7 +50,7 @@ trait BundlesNotifications
      *
      * @return array<string, \Illuminate\Support\Carbon|int>
      */
-    public function withDelay($notifiable): array
+    public function withDelay(object $notifiable): array
     {
         $delay = $this->bundleDelay($notifiable);
 
@@ -65,7 +65,7 @@ trait BundlesNotifications
      * Returns the middleware that should be applied on the job that sends the
      * notification.
      */
-    public function middleware($notifiable): array
+    public function middleware(object $notifiable): array
     {
         return [new BundlesNotificationsMiddleware($notifiable)];
     }

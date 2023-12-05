@@ -7,5 +7,5 @@ return [
      * This is a default value, it can be overridden in the notification itself by
      * overriding the bundleNotificationsAfterSeconds() method.
      */
-    'bundle_notifications_after_seconds' => 5,
+    'bundle_notifications_after_seconds' => 30,
 ];

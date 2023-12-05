@@ -25,6 +25,7 @@ class NotificationBundlerServiceProvider extends ServiceProvider
 
             NotificationBundle::create([
                 'uuid' => $event->job->notification->id,
+                'channel' => $event->job->channels[0],
                 'bundle_identifier' => $notification->bundleIdentifier($notifiable),
                 'payload' => serialize($notification),
             ]);

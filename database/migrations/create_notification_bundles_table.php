@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('notification_bundles', function (Blueprint $table) {
             $table->uuid();
+            $table->string('channel');
             $table->string('bundle_identifier');
             $table->longText('payload');
 

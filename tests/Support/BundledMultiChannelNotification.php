@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 use Owowagency\NotificationBundler\BundlesNotifications;
 use Owowagency\NotificationBundler\ShouldBundleNotifications;
 
-class BundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
+class BundledMultiChannelNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
 {
     use BundlesNotifications, Queueable;
 
@@ -21,7 +21,7 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMailBundle(object $notifiable, Collection $notifications)
@@ -34,6 +34,12 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
         }
 
         return $message;
+    }
+
+    public function toDatabase(object $notifiable)
+    {
+        $notifications = $this->getBundle();
+        return ['names' => $notifications->pluck('name')->toArray()];
     }
 
     public function bundleIdentifier(object $notifiable): string

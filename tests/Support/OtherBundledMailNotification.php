@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
 use Owowagency\NotificationBundler\BundlesNotifications;
 use Owowagency\NotificationBundler\ShouldBundleNotifications;
 
-class BundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
+class OtherBundledMailNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
 {
     use BundlesNotifications, Queueable;
 
@@ -27,10 +27,11 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
     public function toMailBundle(object $notifiable, Collection $notifications)
     {
         $message = (new MailMessage)
-            ->subject('Bundle');
+            ->subject('Other Bundle');
 
         foreach ($notifications as $notification) {
-            $message->line("$notification->name was bundled.");
+            $prefix = $notification instanceof BundledMailNotification ? 'Original ' : 'Other ';
+            $message->line("$prefix$notification->name was bundled.");
         }
 
         return $message;
