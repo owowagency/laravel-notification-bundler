@@ -2,11 +2,15 @@
 ![banner-light](.github/assets/banner-light.svg#gh-light-mode-only)
 
 <p align="center">
-    <!-- https://github.com/owowagency/laravel-notification-bundler/releases -->
-    <img src="https://img.shields.io/github/release/owowagency/laravel-notification-bundler.svg?logo=github" alt="Release shield">
-    <img src="https://img.shields.io/github/actions/workflow/status/owowagency/laravel-notification-bundler/test.yml?branch=main&label=tests&logo=github" alt="Workflow shield">
-    <!-- https://packagist.org/packages/owowagency/laravel-notification-bundler -->
-    <img src="https://img.shields.io/packagist/dt/owowagency/laravel-notification-bundler.svg?logo=packagist" alt="Downloads shield">
+    <a href="https://github.com/owowagency/laravel-notification-bundler/releases">
+        <img src="https://img.shields.io/github/release/owowagency/laravel-notification-bundler.svg?logo=github" alt="Release shield">
+    </a>
+    <a href="https://github.com/owowagency/laravel-notification-bundler/actions/workflows/test.yml?query=branch%3Amain">
+        <img src="https://img.shields.io/github/actions/workflow/status/owowagency/laravel-notification-bundler/test.yml?branch=main&label=tests&logo=github" alt="Workflow shield">
+    </a>
+    <a href="https://packagist.org/packages/owowagency/laravel-notification-bundler">
+        <img src="https://img.shields.io/packagist/dt/owowagency/laravel-notification-bundler.svg?logo=packagist" alt="Downloads shield">
+    </a>
 </p>
 
 <p align="center">
