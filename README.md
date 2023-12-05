@@ -8,7 +8,7 @@
     <a href="https://github.com/owowagency/laravel-notification-bundler/actions/workflows/test.yml?query=branch%3Amain">
         <img src="https://img.shields.io/github/actions/workflow/status/owowagency/laravel-notification-bundler/test.yml?branch=main&label=tests&logo=github" alt="Workflow shield">
     </a>
-    <a href="https://packagist.org/packages/owowagency/laravel-notification-bundler">
+    <a href="https://packagist.org/packages/owowagency/laravel-notification-bundler" target="_blank">
         <img src="https://img.shields.io/packagist/dt/owowagency/laravel-notification-bundler.svg?logo=packagist" alt="Downloads shield">
     </a>
 </p>
