@@ -30,7 +30,7 @@ class SingleDelayBundledMailNotification extends Notification implements ShouldB
             ->subject('Bundle');
 
         foreach ($notifications as $notification) {
-            $message->line("Delayed notification was bundled.");
+            $message->line('Delayed notification was bundled.');
         }
 
         return $message;

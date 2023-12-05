@@ -39,6 +39,7 @@ class BundledMultiChannelNotification extends Notification implements ShouldBund
     public function toDatabase(object $notifiable)
     {
         $notifications = $this->getBundle();
+
         return ['names' => $notifications->pluck('name')->toArray()];
     }
 
