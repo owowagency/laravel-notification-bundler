@@ -1,6 +1,6 @@
 {
     "name": "owowagency/laravel-nofitication-bundler",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Bundle multiple notifications into one",
     "license": "MIT",
     "keywords": [
