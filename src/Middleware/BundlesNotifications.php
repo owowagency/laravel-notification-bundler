@@ -29,6 +29,12 @@ class BundlesNotifications
         $channel = $job->channels[0];
         $identifier = $notification->bundleIdentifier($this->notifiable);
 
+        if (method_exists($notification, 'bundleChannels')) {
+            if (! in_array($channel, $notification->bundleChannels())) {
+                return $next($job);
+            }
+        }
+
         $notificationBundleQuery = NotificationBundle::query()
             ->where('channel', $channel)
             ->where('bundle_identifier', $identifier);
