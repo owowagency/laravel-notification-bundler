@@ -13,34 +13,7 @@ class NotificationBundlerServiceProvider extends ServiceProvider
     {
         $this->registerPublishables();
 
-        $this->app['events']->listen(JobQueued::class, function (JobQueued $event) {
-            if (! $event->job instanceof SendQueuedNotifications
-                || ! $event->job->notification instanceof ShouldBundleNotifications) {
-                return;
-            }
-
-            $notifiable = $event->job->notifiables->first();
-            /** @var ShouldBundleNotifications $notification */
-            $notification = $event->job->notification;
-            $channel = $event->job->channels[0];
-
-            if (method_exists($notification, 'bundleChannels')) {
-                if (! in_array($channel, $notification->bundleChannels())) {
-                    return;
-                }
-            }
-
-            NotificationBundle::create([
-                'uuid' => $event->job->notification->id,
-                'channel' => $event->job->channels[0],
-                'bundle_identifier' => $notification->bundleIdentifier($notifiable),
-                'payload' => serialize($notification),
-            ]);
-        });
-
-        // TODO Check if models are deleted when job cancelled by other middleware.
-
-        // TODO Check if models are deleted when job failed.
+        $this->app['events']->listen(JobQueued::class, [$this, 'saveBundledNotifications']);
     }
 
     /**
@@ -62,5 +35,31 @@ class NotificationBundlerServiceProvider extends ServiceProvider
         ], 'config');
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+    }
+
+    public function saveBundledNotifications(JobQueued $event): void
+    {
+        if (! $event->job instanceof SendQueuedNotifications
+            || ! $event->job->notification instanceof ShouldBundleNotifications) {
+            return;
+        }
+
+        $notifiable = $event->job->notifiables->first();
+        /** @var ShouldBundleNotifications $notification */
+        $notification = $event->job->notification;
+        $channel = $event->job->channels[0];
+
+        if (method_exists($notification, 'bundleChannels')) {
+            if (! in_array($channel, $notification->bundleChannels())) {
+                return;
+            }
+        }
+
+        NotificationBundle::create([
+            'uuid' => $event->job->notification->id,
+            'channel' => $event->job->channels[0],
+            'bundle_identifier' => $notification->bundleIdentifier($notifiable),
+            'payload' => serialize($notification),
+        ]);
     }
 }

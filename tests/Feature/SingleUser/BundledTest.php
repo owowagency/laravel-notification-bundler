@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Queue;
 use Owowagency\NotificationBundler\Models\NotificationBundle;
 use Owowagency\NotificationBundler\Tests\Support\BundledMailNotification;
 use Owowagency\NotificationBundler\Tests\Support\BundledMultiChannelNotification;
+use Owowagency\NotificationBundler\Tests\Support\ExtraMiddlewareBundledMailNotification;
 use Owowagency\NotificationBundler\Tests\Support\FailingBundledMailNotification;
 use Owowagency\NotificationBundler\Tests\Support\NotifiableModel;
 use Owowagency\NotificationBundler\Tests\Support\SingleDelayBundledMailNotification;
@@ -181,5 +182,16 @@ describe('single user bundled mail notification', function () {
             expect($email->getSubject())->toBe('Bundle');
             expect($email->getTextBody())->toMatchSnapshot();
         });
+    });
+
+    it('deletes records from database if custom middleware stops execution', function () {
+        $this->notifiable->notify(new ExtraMiddlewareBundledMailNotification('Robin'));
+
+        $this->travelTo('2023-06-07 12:00:30');
+
+        $this->artisan('queue:work --once');
+
+        expect(Queue::size())->toBe(0);
+        expect(NotificationBundle::count())->toBe(0);
     });
 });

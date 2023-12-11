@@ -21,6 +21,7 @@
 
 1. [Installation](#-installation)
 1. [Usage](#-usage)
+    1. [Limitations](#limitations)
     1. [Changing the delay](#changing-the-delay)
     1. [Specify the channels to bundle](#specify-the-channels-to-bundle)
 [Contributing](#-contributing)
@@ -94,14 +95,38 @@ class BundledMailNotification extends Notification implements ShouldBundleNotifi
 }
 ```
 
+## Limitations
+
 Because of limitations in Laravel, the database channel must implicitly use the `toArray`, or `toDatabase` method.
 To get the notifications in those functions, you can use the `getBundle()` method.
 
 ```php
-public function toDatabase(object $notifiable)
+public function toDatabase(object $notifiable): array
 {
     $notifications = $this->getBundle();
     return ['names' => $notifications->pluck('name')->toArray()];
+}
+```
+
+When you want to add custom middleware, it is important to always apply the bundle middleware first.
+If you don't do this, your notification could be bundled with a another notification later on, which can cause unexpected results.
+
+```php
+class CustomMiddlewareNotification extends Notification implements ShouldBundleNotifications, ShouldQueue
+{
+    use BundlesNotifications {
+        middleware as bundledMiddleware;
+    }
+    
+    // ...
+    
+    public function middleware(object $notifiable): array
+    {
+        return [
+            ...$this->bundledMiddleware($notifiable), // First apply the bundled middleware.
+            StopExecution::class, // Then apply your own middleware.
+        ];
+    }
 }
 ```
 
