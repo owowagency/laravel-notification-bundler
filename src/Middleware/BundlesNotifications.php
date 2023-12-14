@@ -43,6 +43,8 @@ class BundlesNotifications
             ->latest()
             ->get();
 
+        // The first notification is the latest. If that is the same as the notification we're currently handling,
+        // we don't have any other notifications in the queue that should be bundled.
         if ($notificationBundle->first()->uuid === $notification->id) {
             $bundle = $notificationBundle->pluck('unserialized_payload');
             $notification->setBundle($bundle);

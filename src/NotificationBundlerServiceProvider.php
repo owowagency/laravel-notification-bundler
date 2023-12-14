@@ -2,10 +2,9 @@
 
 namespace Owowagency\NotificationBundler;
 
-use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Support\ServiceProvider;
-use Owowagency\NotificationBundler\Models\NotificationBundle;
+use Owowagency\NotificationBundler\Jobs\SaveBundledNotifications;
 
 class NotificationBundlerServiceProvider extends ServiceProvider
 {
@@ -13,34 +12,7 @@ class NotificationBundlerServiceProvider extends ServiceProvider
     {
         $this->registerPublishables();
 
-        $this->app['events']->listen(JobQueued::class, function (JobQueued $event) {
-            if (! $event->job instanceof SendQueuedNotifications
-                || ! $event->job->notification instanceof ShouldBundleNotifications) {
-                return;
-            }
-
-            $notifiable = $event->job->notifiables->first();
-            /** @var ShouldBundleNotifications $notification */
-            $notification = $event->job->notification;
-            $channel = $event->job->channels[0];
-
-            if (method_exists($notification, 'bundleChannels')) {
-                if (! in_array($channel, $notification->bundleChannels())) {
-                    return;
-                }
-            }
-
-            NotificationBundle::create([
-                'uuid' => $event->job->notification->id,
-                'channel' => $event->job->channels[0],
-                'bundle_identifier' => $notification->bundleIdentifier($notifiable),
-                'payload' => serialize($notification),
-            ]);
-        });
-
-        // TODO Check if models are deleted when job cancelled by other middleware.
-
-        // TODO Check if models are deleted when job failed.
+        $this->app['events']->listen(JobQueued::class, SaveBundledNotifications::class);
     }
 
     /**
